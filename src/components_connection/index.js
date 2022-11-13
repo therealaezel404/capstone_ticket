@@ -1,0 +1,1 @@
+export const URL = "http://localhost/php_capstone_api/index.php"
