@@ -10,8 +10,7 @@ const VoidTicketForm = () => {
         <div>
             <div className="create">
             <form>
-
-            <label>Reason</label>
+                <label>Reason</label>
                 <select
                     value={reason}
                     onChange={(e) => setReason(e.target.value)}
@@ -24,16 +23,11 @@ const VoidTicketForm = () => {
                
                 <label>Remarks</label>
                 <textarea
-                    placeholder="Write your remarks here..."
-                required
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
+                    placeholder="Write your remarks here..." required value={description} onChange={(e) => setDescription(e.target.value)}
                 ></textarea>
-                
-                
-                <button type="submit">Confirm</button>
-                
-                
+                <button type="submit">
+                    Confirm
+                </button>
             </form>
             </div>
         </div>

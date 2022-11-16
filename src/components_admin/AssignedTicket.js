@@ -106,9 +106,11 @@ export function AssignedTicket(props) {
             <div className="ticket-actions">
                 <div>
                     <span className="void-button">
-                        <VoidPopup/>
-                    </span><span className="resolve-button"><ResolvePopup/></span>
-                
+                        <VoidPopup />
+                    </span>
+                    <span className="resolve-button">
+                        <ResolvePopup />
+                    </span>
                 </div>
             </div>
             </div>

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 04, 2022 at 11:13 AM
+-- Generation Time: Nov 16, 2022 at 02:22 PM
 -- Server version: 10.4.22-MariaDB
 -- PHP Version: 7.4.27
 
@@ -67,7 +67,53 @@ CREATE TABLE `tbl_issues` (
 
 INSERT INTO `tbl_issues` (`issue_id`, `issue_name`, `category_id`, `issue_description`, `issue_status`, `date_created`, `date_updated`) VALUES
 (1, 'Issue #1', 1, 'ISSUE #1 DESCRIPTION', '1', '2022-10-09', '2022-10-09'),
-(2, 'Issue #2', 2, 'ISSUE #2 DESCRIPTION', '1', '2022-10-09', '2022-10-09');
+(2, 'Issue #2', 2, 'ISSUE #2 DESCRIPTION', '1', '2022-10-09', '2022-10-09'),
+(3, 'aaa', 0, 'aaa', '', '2022-11-03', '2022-11-03'),
+(4, 'aaa', 31, 'aaa', '', '2022-11-03', '2022-11-03'),
+(5, 'aaa', 2, 'aaa', '', '2022-11-03', '2022-11-03'),
+(6, 'aaa111', 2, 'aaa111', '', '2022-11-03', '2022-11-03');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `tbl_reasons`
+--
+
+CREATE TABLE `tbl_reasons` (
+  `id` int(11) NOT NULL,
+  `reason` text NOT NULL,
+  `reason_desc` text NOT NULL,
+  `reason_added` date NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `tbl_reasons`
+--
+
+INSERT INTO `tbl_reasons` (`id`, `reason`, `reason_desc`, `reason_added`) VALUES
+(1, 'Reason #1', 'Reason #1 Description', '2022-11-12'),
+(2, 'Reason #2', 'Reason #2 Description', '2022-11-12');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `tbl_solutions`
+--
+
+CREATE TABLE `tbl_solutions` (
+  `id` int(11) NOT NULL,
+  `solution` text NOT NULL,
+  `solution_description` text NOT NULL,
+  `date_created` date NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `tbl_solutions`
+--
+
+INSERT INTO `tbl_solutions` (`id`, `solution`, `solution_description`, `date_created`) VALUES
+(1, 'Solution #1', 'Solution desc1', '2022-11-16'),
+(2, 'Solution #2', 'solution desc2', '2022-11-16');
 
 -- --------------------------------------------------------
 
@@ -79,7 +125,9 @@ CREATE TABLE `tbl_tickets` (
   `id` int(11) NOT NULL,
   `ticket_number` varchar(255) NOT NULL,
   `name` text NOT NULL,
-  `status` int(11) NOT NULL,
+  `status` int(11) NOT NULL DEFAULT 0 COMMENT '0 - service request\r\n1 - ongoing ticket\r\n2 - resolved ticket\r\n3 - canceled ticket\r\n4 - rejected service request\r\n5 - reopened ticket',
+  `reject_reason` int(11) NOT NULL,
+  `voided_reason` int(11) NOT NULL,
   `email` varchar(1000) NOT NULL,
   `role` int(11) NOT NULL,
   `affiliation` text NOT NULL,
@@ -99,10 +147,10 @@ CREATE TABLE `tbl_tickets` (
 -- Dumping data for table `tbl_tickets`
 --
 
-INSERT INTO `tbl_tickets` (`id`, `ticket_number`, `name`, `status`, `email`, `role`, `affiliation`, `category`, `issue`, `description`, `file`, `tech_user`, `priority_level`, `resolution`, `remarks`, `date_added`, `date_resolved`) VALUES
-(2, '83634A', 'Juan Dela Cruz', 2, 'tiff.madrigal95@gmail.com', 1, 'aaaaa', 1, 1, 'aaaaa', 'C:\\fakepath\\face-throwing-a-kiss_1f618.png', 1, 1, 'Sample resolution', 'sample remarks', '2022-10-15', '2022-10-23'),
-(4, '12312A', 'Juan Dela Cruz', 1, 'tiff.madrigal95@gmail.com', 1, 'aaaaa', 1, 1, 'aaaaa', 'C:\\fakepath\\face-throwing-a-kiss_1f618.png', 0, 1, 'Sample resolution', 'sample remarks', '2022-10-15', NULL),
-(5, '32132A', 'Juan Dela Cruz', 1, 'tiff.madrigal95@gmail.com', 1, 'aaaaa', 1, 1, 'aaaaa', 'C:\\fakepath\\face-throwing-a-kiss_1f618.png', 1, 1, 'Sample resolution', 'sample remarks', '2022-10-15', NULL);
+INSERT INTO `tbl_tickets` (`id`, `ticket_number`, `name`, `status`, `reject_reason`, `voided_reason`, `email`, `role`, `affiliation`, `category`, `issue`, `description`, `file`, `tech_user`, `priority_level`, `resolution`, `remarks`, `date_added`, `date_resolved`) VALUES
+(2, '83634A', 'Juan Dela Cruz', 3, 0, 2, 'tiff.madrigal95@gmail.com', 1, 'aaaaa', 1, 1, 'aaaaa', 'C:\\fakepath\\face-throwing-a-kiss_1f618.png', 1, 1, 'Sample resolution', 'adsadsa', '2022-10-15', '2022-10-23'),
+(4, '12312A', 'Juan Dela Cruz', 0, 0, 0, 'tiff.madrigal95@gmail.com', 1, 'aaaaa', 1, 1, 'aaaaa', 'C:\\fakepath\\face-throwing-a-kiss_1f618.png', 0, 1, 'Sample resolution', '', '2022-10-15', NULL),
+(5, '32132A', 'Juan Dela Cruz', 0, 0, 0, 'tiff.madrigal95@gmail.com', 1, 'aaaaa', 1, 1, 'aaaaa', 'C:\\fakepath\\face-throwing-a-kiss_1f618.png', 0, 1, 'Sample resolution', '', '2022-10-15', NULL);
 
 -- --------------------------------------------------------
 
@@ -128,29 +176,42 @@ CREATE TABLE `tbl_users` (
 
 INSERT INTO `tbl_users` (`id`, `first_name`, `middle_name`, `last_name`, `email`, `password`, `user_role`, `user_status`, `date_added`) VALUES
 (1, 'John', 'Doe', 'Banana', 'admin@admin.com', '123456', 1, 1, '2022-10-23'),
-(2, 'Renz Steven', 'D.', 'Madrigal', 'theloneboat@gmail.com', '123', 1, 0, '2022-11-04');
+(2, 'Juan', 'Doe', 'Fruit', 'tech@tech.com', '123456', 2, 1, '2022-10-23'),
+(3, 'Julia', 'Doe', 'Vegetable', 'tech@tech.com', '123456', 2, 1, '2022-10-23');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `tbl_user_role`
+-- Table structure for table `tbl_user_roles`
 --
 
-CREATE TABLE `tbl_user_role` (
+CREATE TABLE `tbl_user_roles` (
   `id` int(11) NOT NULL,
-  `user_rolename` text NOT NULL,
-  `date_added` date NOT NULL,
-  `date_modified` date NOT NULL
+  `user_role` int(11) NOT NULL,
+  `user_rolename` varchar(1000) NOT NULL,
+  `date_added` date NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `tbl_voidreasons`
+--
+
+CREATE TABLE `tbl_voidreasons` (
+  `id` int(11) NOT NULL,
+  `reason` text NOT NULL,
+  `reason_desc` text NOT NULL,
+  `date` date NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
--- Dumping data for table `tbl_user_role`
+-- Dumping data for table `tbl_voidreasons`
 --
 
-INSERT INTO `tbl_user_role` (`id`, `user_rolename`, `date_added`, `date_modified`) VALUES
-(1, 'Admin', '2022-11-04', '2022-11-04'),
-(2, 'IT', '2022-11-04', '2022-11-04'),
-(3, 'Helpdesk', '2022-11-04', '2022-11-04');
+INSERT INTO `tbl_voidreasons` (`id`, `reason`, `reason_desc`, `date`) VALUES
+(1, 'Void Reason #1', 'reason_1', '2022-11-16'),
+(2, 'Void Reason #2', 'reason_2', '2022-11-16');
 
 -- --------------------------------------------------------
 
@@ -229,6 +290,18 @@ ALTER TABLE `tbl_issues`
   ADD PRIMARY KEY (`issue_id`);
 
 --
+-- Indexes for table `tbl_reasons`
+--
+ALTER TABLE `tbl_reasons`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `tbl_solutions`
+--
+ALTER TABLE `tbl_solutions`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `tbl_tickets`
 --
 ALTER TABLE `tbl_tickets`
@@ -241,9 +314,15 @@ ALTER TABLE `tbl_users`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `tbl_user_role`
+-- Indexes for table `tbl_user_roles`
 --
-ALTER TABLE `tbl_user_role`
+ALTER TABLE `tbl_user_roles`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `tbl_voidreasons`
+--
+ALTER TABLE `tbl_voidreasons`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -272,7 +351,19 @@ ALTER TABLE `categories`
 -- AUTO_INCREMENT for table `tbl_issues`
 --
 ALTER TABLE `tbl_issues`
-  MODIFY `issue_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `issue_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
+-- AUTO_INCREMENT for table `tbl_reasons`
+--
+ALTER TABLE `tbl_reasons`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `tbl_solutions`
+--
+ALTER TABLE `tbl_solutions`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `tbl_tickets`
@@ -284,13 +375,19 @@ ALTER TABLE `tbl_tickets`
 -- AUTO_INCREMENT for table `tbl_users`
 --
 ALTER TABLE `tbl_users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
--- AUTO_INCREMENT for table `tbl_user_role`
+-- AUTO_INCREMENT for table `tbl_user_roles`
 --
-ALTER TABLE `tbl_user_role`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+ALTER TABLE `tbl_user_roles`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `tbl_voidreasons`
+--
+ALTER TABLE `tbl_voidreasons`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `test`

@@ -11,6 +11,39 @@ if(isset($_POST["tag"])) {	//POST
 }
 
 switch ($tag) {
+	case 'get_resolvelist':
+		
+	break;
+	case 'submitvoidmessage':
+		$voidreason=$_POST['voidreason'];
+		$status="3";
+		$trc=$_POST['trc'];
+		$remarks=$_POST['remarks'];
+
+
+		$query="UPDATE tbl_tickets SET remarks=?, voided_reason=?, status=? WHERE ticket_number=?";
+		$stmt=$pdo->prepare($query);
+		if($stmt->execute([$remarks,$voidreason,$status,$trc])) {
+			echo json_encode(json_encode([
+				"status" => "updated"
+			]));
+		} else {
+			echo json_encode(json_encode([
+				"status" => "error"
+			]));
+		}
+	break;
+	case 'get_voidreasons':
+		$query="SELECT * FROM tbl_voidreasons";
+		$stmt=$pdo->prepare($query);
+		if($stmt->execute()) {
+			echo json_encode($stmt->fetchAll(PDO::FETCH_ASSOC));
+		} else {
+			echo json_encode(json_encode([
+				"status" => "error"
+			]));
+		}
+	break;
 	case 'get_openedtickets':
 		$user_id=$_GET['user_id'];
 		$query="SELECT tbl_tickets.*, tbl_issues.issue_name, categories.category_name FROM tbl_tickets INNER JOIN tbl_issues ON tbl_tickets.issue=tbl_issues.issue_id INNER JOIN categories ON categories.category_id=tbl_tickets.category WHERE tech_user=?";
