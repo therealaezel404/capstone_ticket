@@ -42,31 +42,35 @@ export function ANUserForm(props) {
   
 
   const _addUser = () => {
+      if(password == cPassword) {
+         let f =  new FormData()
+        f.append("tag","insert_user")
+        f.append("first_name", firstName)
+        f.append("last_name", surname)
+        f.append("middle_initial", middleInitial)
+        f.append("email", email)
+        f.append("password", password)
+        f.append("user_role", role)
+        f.append("status", status)
 
-      let f =  new FormData()
-      f.append("tag","insert_user")
-      f.append("first_name", firstName)
-      f.append("last_name", surname)
-      f.append("middle_initial", middleInitial)
-      f.append("email", email)
-      f.append("password", password)
-      f.append("user_role", role)
-      f.append("status", status)
-
-      axios.post(URL,f).then(res2=>{
-        var output = JSON.parse(res2.data);
-        console.log(output['status']);
-        switch(output['status']) {
-          case 'inserted':
-            routeChange();
-          break;
-          case 'error':
-            alert("error");
-          break;
-        }
-      }).catch(err=>{
-        console.log(err.message);
-      })
+        axios.post(URL,f).then(res2=>{
+          var output = JSON.parse(res2.data);
+          console.log(output['status']);
+          switch(output['status']) {
+            case 'inserted':
+              alert("User added successfully");
+              routeChange();
+            break;
+            case 'error':
+              alert("error");
+            break;
+          }
+        }).catch(err=>{
+          console.log(err.message);
+        })
+      } else if(password != cPassword) {
+        alert("password & confirm password is not the same.")
+      }
   }
 
   

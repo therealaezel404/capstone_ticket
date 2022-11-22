@@ -10,24 +10,42 @@ import {URL} from '../components_connection/'
 export function Users(props) {
 
   const [dataSource, setDataSource] = useState([]);
+  const [hasLoaded, setHasLoaded] = useState(false);
+
+
+  let navigate = useNavigate(); 
+
+  const routeChange = () =>{ 
+    let path = '../pages_admin/users/view-edit-user'; 
+    navigate(path);
+  }
+
+   const _ViewUser = (data1) =>{ 
+    localStorage.setItem('selected_user_id',data1);
+    routeChange();
+  }
+
+
 
   useEffect(() => {
     axios.get(URL + "?tag=get_users").then(res=>{
+      console.log(res.data);
       let source = [];
       for (var i = 0; i < res.data.length; i++) {
+        let user_id = res.data[i]['id'];
         source.push({
           name: res.data[i]['last_name'] + ", " + res.data[i]['first_name'],
           email: res.data[i]['email'],
           userRole: res.data[i]['user_rolename'],
           activityStatus: "Online",
           action: (
-            <Link to="../pages_admin/users/view-edit-user">Edit</Link>
+            <button onClick={()=>(_ViewUser(user_id))}>Edit</button>
           ),
         });
       }
       setDataSource(source);
     })
-  })
+  },[])
 
 
 

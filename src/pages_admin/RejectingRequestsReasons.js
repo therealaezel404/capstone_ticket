@@ -1,12 +1,84 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import { Outlet } from "react-router";
-import { Link } from "react-router-dom";
 import { MDBDataTable } from "mdbreact";
-import DeletePopup from "../components_admin/DeletePopup";
+import axios from 'axios';
+import { Link,useNavigate } from "react-router-dom";
+import {URL} from '../components_connection/'
 
-const RejectingRequestsReasons = () => {
+
+export function RejectingRequestsReasons(props) {
+  const [dataSource, setDataSource] = useState([]);
+  const [reason_id, setReasonID] = useState(null);
+
+  const [deleteReasonPopup, setDeleteReasonPopup] = useState(false);
+
+  const closePopup = () => {
+    setDeleteReasonPopup(false);
+  };
+
+  let navigate = useNavigate(); 
+
+  const routeChange = () =>{ 
+    let path = '../pages_admin/templates/rejecting-requests-reasons/view-rejecting-reason'; 
+    navigate(path);
+  }
+
+  const _editReason = (data) =>{
+    let reason_id = localStorage.setItem('selected_reason_id', data)
+    routeChange();
+  }
+
+  const _handleClickOpen = (data1) =>{ 
+    setReasonID(data1);
+    setDeleteReasonPopup(!deleteReasonPopup);
+  }
+
+  const _deleteReason = () =>{ 
+    axios.get(URL + "?tag=delete_reason&reason_id="+reason_id).then(res=>{
+      console.log(res.data);
+      setDeleteReasonPopup(false);
+      _fetchReasons();
+    })
+  }
+
+  useEffect(() => {
+    _fetchReasons();
+  },[])
+
+  const _fetchReasons = () => {
+    axios.get(URL + "?tag=get_reasons").then(res=>{
+      console.log(res.data);
+      let source = []; 
+      for (var i = 0; i < res.data.length; i++) {
+        let reason_id = res.data[i]['id'];
+        source.push({
+          reason: res.data[i]['reason'],
+          description: res.data[i]['reason_desc'],
+          dateCreated: res.data[i]['reason_added'],
+          action: (
+              <div>
+                <span>
+                  <button style={{backgroundColor: 'transparent', border: 0, color: '#0984e3'}} onClick={()=>(_editReason(reason_id))}>
+                    <i className="bi bi-eye" title="VIEW"></i>
+                  </button>
+                </span>
+                <span>
+                  <button style={{backgroundColor: 'transparent', border: 0, color: '#e74c3c'}} onClick={()=>(_handleClickOpen(reason_id))}>
+                    <i className="bi bi-trash3-fill" title="DELETE"></i>
+                  </button>
+                </span>
+            </div>
+          ),
+        });
+      }
+      setDataSource(source);
+    })
+  }
+
+
+
   const data = {
     columns: [
       {
@@ -34,148 +106,33 @@ const RejectingRequestsReasons = () => {
         width: 100,
       },
     ],
-    rows: [
-      {
-        reason: "asjdhaksjdhdhkadhkja",
-        description: "descripkasjdhkation here blah blah",
-        dateCreated: "2011/12/06",
-        action: (
-          <div>
-            <Link to="../pages_admin/templates/rejecting-requests-reasons/view-rejecting-reason">
-              <i className="bi bi-eye" title="VIEW"></i>
-            </Link>
-            <span>
-              <DeletePopup />
-            </span>
-          </div>
-        ),
-      },
-      {
-        reason: "reasons (aouejshlsjf)",
-        description: "reasons description here blah blah",
-        dateCreated: "2013/12/08",
-        action: (
-          <div>
-            <Link to="../pages_admin/templates/rejecting-requests-reasons/view-rejecting-reason">
-              <i className="bi bi-eye" title="VIEW"></i>
-            </Link>
-            <span>
-              <DeletePopup />
-            </span>
-          </div>
-        ),
-      },
-      {
-        reason: "asjdhaksjdhdhkadhkja",
-        description: "descriptaskjdhion here blah blah",
-        dateCreated: "2011/12/03",
-        action: (
-          <div>
-            <Link to="../pages_admin/templates/rejecting-requests-reasons/view-rejecting-reason">
-              <i className="bi bi-eye" title="VIEW"></i>
-            </Link>
-            <span>
-              <DeletePopup />
-            </span>
-          </div>
-        ),
-      },
-      {
-        reason: "reasons (aouejshlsjf)",
-        description: "reasons description here blah blah",
-        dateCreated: "2018/05/08",
-        action: (
-          <div>
-            <Link to="../pages_admin/templates/rejecting-requests-reasons/view-rejecting-reason">
-              <i className="bi bi-eye" title="VIEW"></i>
-            </Link>
-            <span>
-              <DeletePopup />
-            </span>
-          </div>
-        ),
-      },
-
-      {
-        reason: "reasons (aouejshlsjf)",
-        description: "reasons description here blah blah",
-        dateCreated: "2019/11/06",
-        action: (
-          <div>
-            <Link to="../pages_admin/templates/rejecting-requests-reasons/view-rejecting-reason">
-              <i className="bi bi-eye" title="VIEW"></i>
-            </Link>
-            <span>
-              <DeletePopup />
-            </span>
-          </div>
-        ),
-      },
-      {
-        reason: "asjdhaksjdhdhkadhkja",
-        description: "descripkasjdhkation here blah blah",
-        dateCreated: "2011/12/06",
-        action: (
-          <div>
-            <Link to="../pages_admin/templates/rejecting-requests-reasons/view-rejecting-reason">
-              <i className="bi bi-eye" title="VIEW"></i>
-            </Link>
-            <span>
-              <DeletePopup />
-            </span>
-          </div>
-        ),
-      },
-      {
-        reason: "asjdhaksjdhdhkadhkja",
-        description: "descripkasjdhkation here blah blah",
-        dateCreated: "2011/12/06",
-        action: (
-          <div>
-            <Link to="../pages_admin/templates/rejecting-requests-reasons/view-rejecting-reason">
-              <i className="bi bi-eye" title="VIEW"></i>
-            </Link>
-            <span>
-              <DeletePopup />
-            </span>
-          </div>
-        ),
-      },
-      {
-        reason: "reasons (aouejshlsjf)",
-        description: "reasons description here blah blah",
-        dateCreated: "2013/12/08",
-        action: (
-          <div>
-            <Link to="../pages_admin/templates/rejecting-requests-reasons/view-rejecting-reason">
-              <i className="bi bi-eye" title="VIEW"></i>
-            </Link>
-            <span>
-              <DeletePopup />
-            </span>
-          </div>
-        ),
-      },
-      {
-        reason: "reasons (aouejshlsjf)",
-        description: "reasons description here blah blah",
-        dateCreated: "2018/05/08",
-        action: (
-          <div>
-            <Link to="../pages_admin/templates/rejecting-requests-reasons/view-rejecting-reason">
-              <i className="bi bi-eye" title="VIEW"></i>
-            </Link>
-            <span>
-              <DeletePopup />
-            </span>
-          </div>
-        ),
-      },
-    ],
+    rows: dataSource
   };
 
   return (
     <div className="bodybox">
+        {deleteReasonPopup ? (
+        <div className="delete-popup">
+          <div className="form-popup">
+            <div>
+              <center>
+                <div className="form-popup-title">DELETE</div>
+              </center>
+
+              <div className="delete-popup-message">
+                Are you sure you wish to delete?
+              </div>
+
+              <button onClick={_deleteReason} className="confirm-delete">Confirm</button>
+              <button onClick={closePopup} className="delete-cancel">
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : (
+        ""
+      )}
       <Container>
         <Row>
           <div className="page-title">

@@ -18,22 +18,44 @@ export function Login(props) {
   const [email, setEmail] = useState(""); //email
   const [password, setPassword] = useState(""); //password
 
-  let navigate = useNavigate(); 
+  let navigate = useNavigate();
+
   const _gotoAdmin = () =>{ 
     let path = '/admin'; 
+    navigate(path);
+  }
+
+  const _gotoITSupport = () =>{ 
+    let path = '/it-support'; 
+    navigate(path);
+  }
+
+  const _gotoHelpDesk = () =>{ 
+    let path = '/help-desk'; 
     navigate(path);
   }
 
   const _Login = () => {
     axios.get(URL + "?tag=admin_login"+"&email="+email+"&password="+password).then(res=>{
       var output = JSON.parse(res.data);
+      console.log(res.data);
       switch(output['status']) {
         case 'ok': //success
           localStorage.setItem("staff_id", output['id']);
           localStorage.setItem("staff_fullname", output['fullname']);
-          localStorage.setItem("email", output['fullname']);
+          localStorage.setItem("email", output['email']);
           localStorage.setItem("user_role", output['user_role']);
-          _gotoAdmin();
+          switch (output['user_role']) {
+            case 1: // admin
+              _gotoAdmin();
+            break;
+            case 2: // it supp
+              _gotoITSupport();
+            break;
+            case 3: // help-desk
+              _gotoHelpDesk();
+            break;
+          }
         break;
         case 'error': //failed
           alert("Login failed. (email or password is incorrect)");

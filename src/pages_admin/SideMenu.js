@@ -1,13 +1,68 @@
-import React from "react";
+import { useEffect, useRef, useState } from "react";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import TopLogo from "../assets_admin/toplogo.png";
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink,useNavigate } from "react-router-dom";
+import axios from 'axios';
+import {URL} from '../components_connection/'
 
-const SideMenu = () => {
+export function SideMenu(props) {
+  const [popup, setPop] = useState(false);
+
+  const handleClickOpen = () => {
+    setPop(!popup);
+  };
+  const closePopup = () => {
+    setPop(false);
+  };
+
+
+  let navigate = useNavigate(); 
+
+  const routeChange = () =>{ 
+    let path = 'pages_admin/myaccount'; 
+    navigate(path);
+  }
+
+  const _openMyAccount = () =>{
+    let my_id = localStorage.getItem("staff_id");
+    localStorage.setItem("selected_user_id", my_id);
+    routeChange();
+  }
+
+  const _Logout = (data) => {
+    localStorage.clear();
+    let path = '../login-admin'; 
+    navigate(path);
+  }
+
   return (
     <div className="side-menu">
+      {popup ? (
+          <div className="form-popup">
+            <div>
+              <center>
+                <div className="form-popup-title">LOGOUT</div>
+              </center>
+               <div className="create">
+                  <label>Are you sure you want to logout?</label>
+                  <div>
+                    <span>
+                      <button onClick={_Logout}>Confirm</button>
+                    </span>
+                    <span>
+                        <button onClick={closePopup} className="cancel">
+                        Cancel
+                      </button>
+                    </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : (
+          ""
+        )}
       <div className="top-section">
         <Container fluid>
           <Row>
@@ -141,26 +196,25 @@ const SideMenu = () => {
           <div className="row">
             <div className="col-xs">
               <li>
-                <NavLink
-                  style={{ textDecoration: "none" }}
-                  to="pages_admin/myaccount"
+                <button
+                  style={{backgroundColor: 'transparent', textDecoration: 'none', border: 0}}
+                  onClick={_openMyAccount}
                   // activeclassname="active"
                   className="menu-item-footer"
                 >
                   <span>My Account</span>
-                </NavLink>
+                </button>
               </li>
             </div>
             <div className="col-xs">
-              <Link
-                style={{ textDecoration: "none" }}
-                to="/admin"
-                className="menu-item-footer"
-              >
-                <span>
+              <button
+                  style={{backgroundColor: 'transparent', textDecoration: 'none', border: 0}}
+                  onClick={handleClickOpen}
+                  // activeclassname="active"
+                  className="menu-item-footer"
+                >
                   <span>Log Out</span>
-                </span>
-              </Link>
+                </button>
             </div>
           </div>
         </div>

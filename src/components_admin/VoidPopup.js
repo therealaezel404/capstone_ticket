@@ -17,8 +17,7 @@ export function VoidPopup(props) {
   const handleClickOpen = () => {
     setPop(!popup);
   };
-
-
+  
   const closePopup = () => {
     setPop(false);
   };

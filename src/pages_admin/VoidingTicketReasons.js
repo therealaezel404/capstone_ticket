@@ -1,12 +1,84 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import { Outlet } from "react-router";
-import { Link } from "react-router-dom";
 import { MDBDataTable } from "mdbreact";
+import axios from 'axios';
+import { Link,useNavigate } from "react-router-dom";
+import {URL} from '../components_connection/'
 import DeletePopup from "../components_admin/DeletePopup";
 
-const VoidingTicketReasons = () => {
+export function VoidingTicketReasons(props) {
+  const [dataSource, setDataSource] = useState([]);
+  const [void_id, setVoidID] = useState(null);
+
+  const [deleteVoidPopup, setDeleteVoidPopup] = useState(false);
+
+  useEffect(() => {
+    _fetchVoid();
+  },[])
+
+  let navigate = useNavigate(); 
+
+  const routeChange = () =>{ 
+    let path = '../pages_admin/templates/voiding-ticket-reasons/view-voiding-reason'; 
+    navigate(path);
+  }
+
+  const closePopup = () => {
+    setDeleteVoidPopup(false);
+  };
+
+  const _handleClickOpen = (data1) => { 
+    setVoidID(data1);
+    setDeleteVoidPopup(!deleteVoidPopup);
+  }
+
+  const _editVoid = (data) =>{
+    let void_id = localStorage.setItem('selected_void_id', data)
+    routeChange();
+  }
+
+
+  const _fetchVoid = () => {
+    axios.get(URL + "?tag=get_void").then(res=>{
+      console.log(res.data);
+      let source = []; 
+      for (var i = 0; i < res.data.length; i++) {
+        let void_id = res.data[i]['id'];
+        source.push({
+          reason: res.data[i]['reason'],
+          description: res.data[i]['reason_desc'],
+          dateCreated: res.data[i]['date'],
+          action: (
+              <div>
+                <span>
+                  <button style={{backgroundColor: 'transparent', border: 0, color: '#0984e3'}} onClick={()=>(_editVoid(void_id))}>
+                    <i className="bi bi-eye" title="VIEW"></i>
+                  </button>
+                </span>
+                <span>
+                  <button style={{backgroundColor: 'transparent', border: 0, color: '#e74c3c'}} onClick={()=>(_handleClickOpen(void_id))}>
+                    <i className="bi bi-trash3-fill" title="DELETE"></i>
+                  </button>
+                </span>
+            </div>
+          ),
+        });
+      }
+      setDataSource(source);
+    })
+  }
+
+  const _deleteVoid = () =>{ 
+    axios.get(URL + "?tag=delete_void&void_id="+void_id).then(res=>{
+      console.log(res.data);
+      setDeleteVoidPopup(false);
+      _fetchVoid();
+    })
+  }
+
+
   const data = {
     columns: [
       {
@@ -34,148 +106,33 @@ const VoidingTicketReasons = () => {
         width: 100,
       },
     ],
-    rows: [
-      {
-        reason: "Organization Creation",
-        description: "descripkasjdhkation here blah blah",
-        dateCreated: "2011/12/06",
-        action: (
-          <div>
-            <Link to="../pages_admin/templates/voiding-ticket-reasons/view-voiding-reason">
-              <i className="bi bi-eye" title="VIEW"></i>
-            </Link>
-            <span>
-              <DeletePopup />
-            </span>
-          </div>
-        ),
-      },
-      {
-        reason: "Ereasonadha)",
-        description: "reasons description here blah blah",
-        dateCreated: "2013/12/08",
-        action: (
-          <div>
-            <Link to="../pages_admin/templates/voiding-ticket-reasons/view-voiding-reason">
-              <i className="bi bi-eye" title="VIEW"></i>
-            </Link>
-            <span>
-              <DeletePopup />
-            </span>
-          </div>
-        ),
-      },
-      {
-        reason: "Organization Creation",
-        description: "descriptaskjdhion here blah blah",
-        dateCreated: "2011/12/03",
-        action: (
-          <div>
-            <Link to="../pages_admin/templates/voiding-ticket-reasons/view-voiding-reason">
-              <i className="bi bi-eye" title="VIEW"></i>
-            </Link>
-            <span>
-              <DeletePopup />
-            </span>
-          </div>
-        ),
-      },
-      {
-        reason: "Ereasonadha)",
-        description: "reasons description here blah blah",
-        dateCreated: "2018/05/08",
-        action: (
-          <div>
-            <Link to="../pages_admin/templates/voiding-ticket-reasons/view-voiding-reason">
-              <i className="bi bi-eye" title="VIEW"></i>
-            </Link>
-            <span>
-              <DeletePopup />
-            </span>
-          </div>
-        ),
-      },
-
-      {
-        reason: "Ereasonadha)",
-        description: "reasons description here blah blah",
-        dateCreated: "2019/11/06",
-        action: (
-          <div>
-            <Link to="../pages_admin/templates/voiding-ticket-reasons/view-voiding-reason">
-              <i className="bi bi-eye" title="VIEW"></i>
-            </Link>
-            <span>
-              <DeletePopup />
-            </span>
-          </div>
-        ),
-      },
-      {
-        reason: "Organization Creation",
-        description: "descripkasjdhkation here blah blah",
-        dateCreated: "2011/12/06",
-        action: (
-          <div>
-            <Link to="../pages_admin/templates/voiding-ticket-reasons/view-voiding-reason">
-              <i className="bi bi-eye" title="VIEW"></i>
-            </Link>
-            <span>
-              <DeletePopup />
-            </span>
-          </div>
-        ),
-      },
-      {
-        reason: "Organization Creation",
-        description: "descripkasjdhkation here blah blah",
-        dateCreated: "2011/12/06",
-        action: (
-          <div>
-            <Link to="../pages_admin/templates/voiding-ticket-reasons/view-voiding-reason">
-              <i className="bi bi-eye" title="VIEW"></i>
-            </Link>
-            <span>
-              <DeletePopup />
-            </span>
-          </div>
-        ),
-      },
-      {
-        reason: "Ereasonadha)",
-        description: "reasons description here blah blah",
-        dateCreated: "2013/12/08",
-        action: (
-          <div>
-            <Link to="../pages_admin/templates/voiding-ticket-reasons/view-voiding-reason">
-              <i className="bi bi-eye" title="VIEW"></i>
-            </Link>
-            <span>
-              <DeletePopup />
-            </span>
-          </div>
-        ),
-      },
-      {
-        reason: "Ereasonadha)",
-        description: "reasons description here blah blah",
-        dateCreated: "2018/05/08",
-        action: (
-          <div>
-            <Link to="../pages_admin/templates/voiding-ticket-reasons/view-voiding-reason">
-              <i className="bi bi-eye" title="VIEW"></i>
-            </Link>
-            <span>
-              <DeletePopup />
-            </span>
-          </div>
-        ),
-      },
-    ],
+    rows: dataSource
   };
 
   return (
     <div className="bodybox">
+      {deleteVoidPopup ? (
+        <div className="delete-popup">
+          <div className="form-popup">
+            <div>
+              <center>
+                <div className="form-popup-title">DELETE</div>
+              </center>
+
+              <div className="delete-popup-message">
+                Are you sure you wish to delete?
+              </div>
+
+              <button className="confirm-delete" onClick={_deleteVoid}>Confirm</button>
+              <button onClick={closePopup} className="delete-cancel">
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : (
+        ""
+      )}
       <Container>
         <Row>
           <div className="page-title">

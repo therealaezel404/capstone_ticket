@@ -1,12 +1,43 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import { Outlet } from "react-router";
-import { Link } from "react-router-dom";
 import { MDBDataTable } from "mdbreact";
 import DeletePopup from "../components_admin/DeletePopup";
+import axios from 'axios';
+import { Link,useNavigate } from "react-router-dom";
+import {URL} from '../components_connection/'
 
-const UserRoles = () => {
+
+export function UserRoles(props) {
+  const [dataSource, setDataSource] = useState([]);
+
+  useEffect(() => {
+    axios.get(URL + "?tag=get_user_roles").then(res=>{
+      console.log(res.data);
+      let source = [];
+      for (var i = 0; i < res.data.length; i++) {
+        source.push({
+          role: res.data[i]['user_rolename'],
+          description: res.data[i]['user_roledesc'],
+          dateCreated: res.data[i]['date_added'],
+          action: (
+            <div>
+            <Link to="../pages_admin/userroles/view-edit-user-role">
+              <i className="bi bi-pencil-square" title="EDIT"></i>
+            </Link>
+            <span>
+              <DeletePopup />
+            </span>
+          </div>
+          ),
+        });
+      }
+      setDataSource(source);
+    })
+  },[])
+
+
   const data = {
     columns: [
       {
@@ -34,53 +65,7 @@ const UserRoles = () => {
         width: 100,
       },
     ],
-    rows: [
-      {
-        role: "Admin",
-        description: "Manages ticketing system activity",
-        dateCreated: "2011/12/06",
-        action: (
-          <div>
-            <Link to="../pages_admin/userroles/view-edit-user-role">
-              <i className="bi bi-pencil-square" title="EDIT"></i>
-            </Link>
-            <span>
-              <DeletePopup />
-            </span>
-          </div>
-        ),
-      },
-      {
-        role: "Help Desk",
-        description: "Receive requests from clients and assigns to IT Support",
-        dateCreated: "2013/12/08",
-        action: (
-          <div>
-            <Link to="../pages_admin/userroles/view-edit-user-role">
-              <i className="bi bi-pencil-square" title="EDIT"></i>
-            </Link>
-            <span>
-              <DeletePopup />
-            </span>
-          </div>
-        ),
-      },
-      {
-        role: "IT Support",
-        description: "Provides solutions to client requests",
-        dateCreated: "2011/12/03",
-        action: (
-          <div>
-            <Link to="../pages_admin/userroles/view-edit-user-role">
-              <i className="bi bi-pencil-square" title="EDIT"></i>
-            </Link>
-            <span>
-              <DeletePopup />
-            </span>
-          </div>
-        ),
-      },
-    ],
+    rows: dataSource
   };
 
   return (

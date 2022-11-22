@@ -11,8 +11,298 @@ if(isset($_POST["tag"])) {	//POST
 }
 
 switch ($tag) {
+	case 'admin_edituserinfo':
+		$user_id=$_POST['user_id'];
+		$fname=$_POST['fname'];
+		$lname=$_POST['lname'];
+		$mname=$_POST['mname'];
+		$email=$_POST['email'];
+		$user_role=$_POST['role'];
+		$user_status=$_POST['status'];
+
+		$query="UPDATE tbl_users SET
+		first_name=?,
+		last_name=?,
+		middle_name=?,
+		email=?,
+		user_role=?,
+		user_status=?
+		WHERE id=?";
+		$stmt=$pdo->prepare($query);
+		if($stmt->execute([$fname,$lname,$mname,$email,$user_role,$user_status,$user_id])) {
+			echo json_encode(json_encode([
+				"status" => "updated"
+			]));
+		} else {
+			echo json_encode(json_encode([
+				"status" => "error"
+			]));
+		}
+	break;
+	case 'get_userdatabyid':
+		$query="SELECT * FROM tbl_users WHERE id=?";
+		$stmt=$pdo->prepare($query);
+		if($stmt->execute([$_GET['user_id']])) {
+			echo json_encode($stmt->fetchAll(PDO::FETCH_ASSOC));
+		} else {
+			echo json_encode(json_encode([
+				"status" => "error"
+			]));
+		}
+	break;
+	case 'admin_changepassword':
+		$user_id=$_POST['user_id'];
+		$password=$_POST['password'];
+
+		$query="UPDATE tbl_users SET password=? WHERE id=?";
+		$stmt=$pdo->prepare($query);
+		if($stmt->execute([$password,$user_id])) {
+			echo json_encode(json_encode([
+				"status" => "updated"
+			]));
+		} else {
+			echo json_encode(json_encode([
+				"status" => "error"
+			]));
+		}
+	break;
+	case 'edit_void':
+		$void_id=$_POST['void_id'];
+		$reason=$_POST['reason'];
+		$description=$_POST['description'];
+
+		$query="UPDATE tbl_voidreasons SET reason=?, reason_desc=? WHERE id=?";
+		$stmt=$pdo->prepare($query);
+		if($stmt->execute([$reason,$description,$void_id])) {
+			echo json_encode(json_encode([
+				"status" => "updated"
+			]));
+		} else {
+			echo json_encode(json_encode([
+				"status" => "error"
+			]));
+		}
+	break;
+	case 'get_voiddata':
+		$query="SELECT * FROM tbl_voidreasons WHERE id=?";
+		$stmt=$pdo->prepare($query);
+		if($stmt->execute([$_GET['void_id']])) {
+			echo json_encode($stmt->fetchAll(PDO::FETCH_ASSOC));
+		} else {
+			echo json_encode(json_encode([
+				"status" => "error"
+			]));
+		}
+	break;
+	case 'add_voidreason':
+		$reason = $_POST['reason'];
+		$void_description = $_POST['void_description'];
+
+		$query="INSERT INTO tbl_voidreasons (reason,reason_desc,date) VALUES (?,?,?)";
+		$stmt=$pdo->prepare($query);
+		if($stmt->execute([$reason,$void_description,date('Y-m-d')])) {
+			echo json_encode(json_encode([
+				"status" => "inserted"
+			]));
+		} else {
+			echo json_encode(json_encode([
+				"status" => "error"
+			]));
+		}
+	break;
+	case 'delete_void':
+		$void_id=$_GET['void_id'];
+		$query="DELETE FROM tbl_voidreasons WHERE id=?";
+		$stmt=$pdo->prepare($query);
+		if($stmt->execute([$void_id])) {
+			echo json_encode(json_encode([
+				"status" => "deleted"
+			]));
+		} else {
+			echo json_encode(json_encode([
+				"status" => "error"
+			]));
+		}
+	break;
+	case 'get_void':
+		$query="SELECT * FROM tbl_voidreasons";
+		$stmt=$pdo->prepare($query);
+		if($stmt->execute()) {
+			echo json_encode($stmt->fetchAll(PDO::FETCH_ASSOC));
+		} else {
+			echo json_encode(json_encode([
+				"status" => "error"
+			]));
+		}
+	break;
+	case 'get_solutiondata':
+		$query="SELECT * FROM tbl_solutions WHERE id=?";
+		$stmt=$pdo->prepare($query);
+		if($stmt->execute([$_GET['solution_id']])) {
+			echo json_encode($stmt->fetchAll(PDO::FETCH_ASSOC));
+		} else {
+			echo json_encode(json_encode([
+				"status" => "error"
+			]));
+		}
+	break;
+	case 'edit_solution':
+		$solution_id=$_POST['solution_id'];
+		$solution=$_POST['solution'];
+		$solution_description=$_POST['solution_description'];
+
+		$query="UPDATE tbl_solutions SET solution=?, solution_description=? WHERE id=?";
+		$stmt=$pdo->prepare($query);
+		if($stmt->execute([$solution,$solution_description,$solution_id])) {
+			echo json_encode(json_encode([
+				"status" => "updated"
+			]));
+		} else {
+			echo json_encode(json_encode([
+				"status" => "error"
+			]));
+		}
+	break;
+	case 'add_solution':
+		$solution = $_POST['solution'];
+		$solution_description = $_POST['solution_description'];
+
+		$query="INSERT INTO tbl_solutions (solution,solution_description,date_created) VALUES (?,?,?)";
+		$stmt=$pdo->prepare($query);
+		if($stmt->execute([$solution,$solution_description,date('Y-m-d')])) {
+			echo json_encode(json_encode([
+				"status" => "inserted"
+			]));
+		} else {
+			echo json_encode(json_encode([
+				"status" => "error"
+			]));
+		}
+	break;
+	case 'delete_solution':
+		$solution_id=$_GET['solution_id'];
+		$query="DELETE FROM tbl_solutions WHERE id=?";
+		$stmt=$pdo->prepare($query);
+		if($stmt->execute([$solution_id])) {
+			echo json_encode(json_encode([
+				"status" => "deleted"
+			]));
+		} else {
+			echo json_encode(json_encode([
+				"status" => "error"
+			]));
+		}
+	break;
+	case 'get_solutions':
+		$query="SELECT * FROM tbl_solutions";
+		$stmt=$pdo->prepare($query);
+		if($stmt->execute()) {
+			echo json_encode($stmt->fetchAll(PDO::FETCH_ASSOC));
+		} else {
+			echo json_encode(json_encode([
+				"status" => "error"
+			]));
+		}
+	break;
+	case 'edit_reason':
+		$reason_id=$_POST['reason_id'];
+		$reason=$_POST['reason'];
+		$reason_desc=$_POST['reason_desc'];
+
+
+		$query="UPDATE tbl_reasons SET reason=?, reason_desc=? WHERE id=?";
+		$stmt=$pdo->prepare($query);
+		if($stmt->execute([$reason,$reason_desc,$reason_id])) {
+			echo json_encode(json_encode([
+				"status" => "updated"
+			]));
+		} else {
+			echo json_encode(json_encode([
+				"status" => "error"
+			]));
+		}
+	break;
+	case 'get_reasonsdata':
+		$query="SELECT * FROM tbl_reasons WHERE id=?";
+		$stmt=$pdo->prepare($query);
+		if($stmt->execute([$_GET['reason_id']])) {
+			echo json_encode($stmt->fetchAll(PDO::FETCH_ASSOC));
+		} else {
+			echo json_encode(json_encode([
+				"status" => "error"
+			]));
+		}
+	break;
+	case 'add_reason':
+		$reason = $_POST['reason'];
+		$reason_desc = $_POST['reason_desc'];
+
+		$query="INSERT INTO tbl_reasons (reason,reason_desc,reason_added) VALUES (?,?,?)";
+		$stmt=$pdo->prepare($query);
+		if($stmt->execute([$reason,$reason_desc,date('Y-m-d')])) {
+			echo json_encode(json_encode([
+				"status" => "inserted"
+			]));
+		} else {
+			echo json_encode(json_encode([
+				"status" => "error"
+			]));
+		}
+	break;
+	case 'delete_reason':
+		$reason_id=$_GET['reason_id'];
+		$query="DELETE FROM tbl_reasons WHERE id=?";
+		$stmt=$pdo->prepare($query);
+		if($stmt->execute([$reason_id])) {
+			echo json_encode(json_encode([
+				"status" => "deleted"
+			]));
+		} else {
+			echo json_encode(json_encode([
+				"status" => "error"
+			]));
+		}
+	break;
+	case 'get_user_roles':
+		$query="SELECT * FROM tbl_user_roles";
+		$stmt=$pdo->prepare($query);
+		if($stmt->execute()) {
+			echo json_encode($stmt->fetchAll(PDO::FETCH_ASSOC));
+		} else {
+			echo json_encode(json_encode([
+				"status" => "error"
+			]));
+		}
+	break;
+	case 'submitresolvemessage':
+		$solution=$_POST['solution'];
+		$status="2";
+		$trc=$_POST['trc'];
+		$remarks=$_POST['remarks'];
+
+
+		$query="UPDATE tbl_tickets SET remarks=?, voided_reason=?, status=? WHERE ticket_number=?";
+		$stmt=$pdo->prepare($query);
+		if($stmt->execute([$remarks,$solution,$status,$trc])) {
+			echo json_encode(json_encode([
+				"status" => "updated"
+			]));
+		} else {
+			echo json_encode(json_encode([
+				"status" => "error"
+			]));
+		}
+	break;
 	case 'get_resolvelist':
-		
+		$query="SELECT * FROM tbl_solutions";
+		$stmt=$pdo->prepare($query);
+		if($stmt->execute()) {
+			echo json_encode($stmt->fetchAll(PDO::FETCH_ASSOC));
+		} else {
+			echo json_encode(json_encode([
+				"status" => "error"
+			]));
+		}
 	break;
 	case 'submitvoidmessage':
 		$voidreason=$_POST['voidreason'];
@@ -60,7 +350,7 @@ switch ($tag) {
 		$user_id=$_GET['user_id'];
 		$query="SELECT 
 			(SELECT count(id) FROM tbl_tickets WHERE status ='1' AND tech_user=?) as ongoing, 
-			(SELECT count(id) FROM tbl_tickets WHERE tech_user ='2' AND tech_user=?) as resolved, 
+			(SELECT count(id) FROM tbl_tickets WHERE status ='2' AND tech_user=?) as resolved, 
 			(SELECT count(id) FROM tbl_tickets WHERE status ='3' AND tech_user=?) as canceled 
 			FROM tbl_tickets LIMIT 1";
 		$stmt=$pdo->prepare($query);
@@ -164,7 +454,7 @@ switch ($tag) {
 		}
 	break;
 	case 'get_users':
-		$query="SELECT tbl_users.*, tbl_user_role.user_rolename FROM tbl_users INNER JOIN tbl_user_role ON tbl_user_role.id=tbl_users.user_role";
+		$query="SELECT tbl_users.*, tbl_user_roles.user_rolename FROM tbl_users INNER JOIN tbl_user_roles ON tbl_user_roles.id=tbl_users.user_role";
 		$stmt=$pdo->prepare($query);
 		if($stmt->execute()) {
 			echo json_encode($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -196,7 +486,7 @@ switch ($tag) {
 		}
 	break;
 	case 'get_user_roles':
-		$query="SELECT * FROM tbl_user_role";
+		$query="SELECT * FROM tbl_user_roles";
 		$stmt=$pdo->prepare($query);
 		if($stmt->execute()) {
 			echo json_encode($stmt->fetchAll(PDO::FETCH_ASSOC));

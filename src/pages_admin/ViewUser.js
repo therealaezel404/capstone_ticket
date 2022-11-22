@@ -1,16 +1,65 @@
-import React from "react";
+import { useEffect, useRef, useState } from "react";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import { Outlet } from "react-router";
-import { Link } from "react-router-dom";
 import EditUserPopup from "../components_admin/EditUserPopup";
 import Highcharts from "highcharts";
 import ChangePasswordPopup from "../components_admin/ChangePasswordPopup";
-import { useEffect, useRef, useState } from "react";
+import axios from 'axios';
+import { Link,useNavigate } from "react-router-dom";
+import {URL} from '../components_connection/'
 
-const ViewUser = () => {
+export function ViewUser(props) {
   const refContainer = useRef(null);
   const [dataSource, setDataSource] = useState([]);
+
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [role, setRole] = useState("");
+  const [status, setStatus] = useState("");
+
+  useEffect(() => {
+   _getUserDetails();
+  },[])
+
+
+  const _getUserDetails = () => {
+    let user_id=localStorage.getItem('selected_user_id');
+    axios.get(URL + "?tag=get_userdatabyid&user_id="+user_id).then(res=>{
+      setFullName(res.data[0]['first_name'] + " " + res.data[0]['last_name']);
+      setEmail(res.data[0]['email']);
+      _selectRole(res.data[0]['user_role']);
+      _selectStatus(res.data[0]['user_status']);
+    })
+  }
+
+  const _selectRole = (data) => {
+    console.log("aaa: " + data);
+    switch (data) {
+      case 1:
+        setRole("Admin");
+      break;
+      case 2:
+        setRole("IT Support");
+      break;
+      case 3:
+        setRole("Help Desk");
+      break;
+    }
+  }
+
+  const _selectStatus = (data) => {
+    console.log("aaa2: " + data);
+    switch (data) {
+      case 0:
+        setStatus("Inactive");
+      break;
+      case 1:
+        setStatus("Active");
+      break;
+    }
+  }
+
 
   useEffect(() => {
     const chart = Highcharts.chart(refContainer.current, {
@@ -142,19 +191,19 @@ const ViewUser = () => {
             <div className="account-information">
               <div className="left-account">
                 <div className="account-full-name">
-                  <b>Full Name:</b> Jamie Smith
+                  <b>Full Name:</b> {fullName}
                 </div>
                 <div className="account-email">
                   <br></br>
-                  <b>Email:</b> abcdefg32@gmail.com
+                  <b>Email:</b> {email}
                 </div>
                 <div className="account-role">
                   <br></br>
-                  <b>Role:</b> IT Support
+                  <b>Role:</b> {role}
                 </div>
               </div>
               <div className="right-account">
-                <b>STATUS:</b> ACTIVE
+                <b>STATUS:</b> {status}
                 <div>
                   <ChangePasswordPopup />
                 </div>

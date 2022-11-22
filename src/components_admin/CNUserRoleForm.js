@@ -40,7 +40,7 @@ const CNUserRoleForm = () => {
         </select></div>
        </div>
 
-        <div className="permissions-form"> <PermissionsCheckboxForm /></div>
+        {/*<div className="permissions-form"> <PermissionsCheckboxForm /></div>*/}
        
 
         <div className="create">

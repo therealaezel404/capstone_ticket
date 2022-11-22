@@ -1,14 +1,65 @@
-import Container from 'react-bootstrap/Container';
+import { useEffect, useRef, useState } from "react";
+import Container from "react-bootstrap/Container";
 import Row from 'react-bootstrap/Row';
-import React, { useEffect, useRef, useState } from 'react';
 import Highcharts from 'highcharts';
 import ChangePasswordPopup from '../components_admin/ChangePasswordPopup';
+import axios from 'axios';
+import { Link,useNavigate } from "react-router-dom";
+import {URL} from '../components_connection/'
 
 
-const MyAccountIT = () => {
+export function MyAccountIT(props) {
 
-    const refContainer = useRef(null);
+
+  const refContainer = useRef(null);
   const [dataSource, setDataSource] = useState([]);
+
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [role, setRole] = useState("");
+  const [status, setStatus] = useState("");
+
+  useEffect(() => {
+   _getUserDetails();
+  },[])
+
+
+  const _getUserDetails = () => {
+    let user_id=localStorage.getItem('selected_user_id');
+    axios.get(URL + "?tag=get_userdatabyid&user_id="+user_id).then(res=>{
+      setFullName(res.data[0]['first_name'] + " " + res.data[0]['last_name']);
+      setEmail(res.data[0]['email']);
+      _selectRole(res.data[0]['user_role']);
+      _selectStatus(res.data[0]['user_status']);
+    })
+  }
+
+  const _selectRole = (data) => {
+    console.log("aaa: " + data);
+    switch (data) {
+      case 1:
+        setRole("Admin");
+      break;
+      case 2:
+        setRole("IT Support");
+      break;
+      case 3:
+        setRole("Help Desk");
+      break;
+    }
+  }
+
+  const _selectStatus = (data) => {
+    console.log("aaa2: " + data);
+    switch (data) {
+      case 0:
+        setStatus("Inactive");
+      break;
+      case 1:
+        setStatus("Active");
+      break;
+    }
+  }
  
   useEffect(() => {
     const chart = Highcharts.chart(refContainer.current, {
