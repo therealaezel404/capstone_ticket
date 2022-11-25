@@ -25,7 +25,7 @@ export function MyAccountIT(props) {
 
 
   const _getUserDetails = () => {
-    let user_id=localStorage.getItem('selected_user_id');
+    let user_id=localStorage.getItem('staff_id');
     axios.get(URL + "?tag=get_userdatabyid&user_id="+user_id).then(res=>{
       setFullName(res.data[0]['first_name'] + " " + res.data[0]['last_name']);
       setEmail(res.data[0]['email']);
@@ -186,19 +186,19 @@ export function MyAccountIT(props) {
                     <div className='account-information'>
                         <div className='left-account'>
                             <div className='account-full-name'>
-                                <b>Full Name:</b> Ericanna Jessica Kaylalily Ziania
+                                <b>Full Name:</b> {fullName}
                             </div>
                             <div className='account-email'>
                                 <br></br>
-                                <b>Email:</b> abcdefg32@gmail.com
+                                <b>Email:</b> {email}
                             </div>
                             <div className='account-role'>
                                 <br></br>
-                                <b>Role:</b> IT Support
+                                <b>Role:</b> {role}
                             </div>
                         </div>
                         <div className='right-account'>
-                                <b>STATUS:</b> ACTIVE
+                                <b>STATUS:</b> {status}
                                 <div><ChangePasswordPopup/></div>
                                 
                         </div>

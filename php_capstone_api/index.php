@@ -3,6 +3,9 @@ header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json");
 header("Access-Control-Allow-Methods:POST");
 include "dbconnect.php";
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\SMTP;
+use PHPMailer\PHPMailer\Exception;
 
 if(isset($_POST["tag"])) {	//POST
 	$tag = $_POST["tag"];
@@ -280,13 +283,95 @@ switch ($tag) {
 		$trc=$_POST['trc'];
 		$remarks=$_POST['remarks'];
 
+		$qx="SELECT tbl_tickets.*, categories.category_name, tbl_issues.issue_name, tbl_users.first_name as staff_fname, tbl_users.last_name as staff_lname, tbl_users.email as staff_email, tbl_globalroles.role_name FROM tbl_tickets INNER JOIN categories ON categories.category_id=tbl_tickets.category INNER JOIN tbl_issues ON tbl_issues.issue_id=tbl_tickets.issue 
+			INNER JOIN tbl_users ON tbl_users.id=tbl_tickets.tech_user INNER JOIN tbl_globalroles ON tbl_globalroles.id=tbl_tickets.role
+			WHERE ticket_number=?";
+		$stmtx=$pdo->prepare($qx);
+		if($stmtx->execute([$trc])) {
+			$row=$stmtx->fetch(PDO::FETCH_ASSOC);
+			$email = $row['email'];
+			$full_name = $row['name'];
+			$affiliation = $row['affiliation'];
+			$date_requested = date('Y-m-d', strtotime($row['date_added']));
+			$role=$row['role_name'];
+			$category = $row['category_name'];
+			$issue = $row['issue'];
+			$desc = $row['description'];
+			$files = $row['file'];
+			$tech = $row['staff_fname'] . $row['staff_lname'];
+			$staff_email = $row['staff_email'];
 
-		$query="UPDATE tbl_tickets SET remarks=?, voided_reason=?, status=? WHERE ticket_number=?";
-		$stmt=$pdo->prepare($query);
-		if($stmt->execute([$remarks,$solution,$status,$trc])) {
-			echo json_encode(json_encode([
-				"status" => "updated"
-			]));
+			require 'phpmailer_class/src/PHPMailer.php';
+			require 'phpmailer_class/src/Exception.php';
+			require 'phpmailer_class/src/SMTP.php';
+
+
+			$msg1="Good Day ".$full_name."!, <br><br> 
+			Your ticket ".$trc." has been RESOLVED. <br><br>
+
+			Reason: ".$solution." <br><br>
+
+			Remarks: ".$remarks." <br><br>
+
+
+
+ You provided the following information: <br><br><br>";
+			$msg1 .= "
+			Name: <strong>".$full_name."</strong><br>
+			Email: <strong>".$email."</strong><br>
+			Role: <strong>".$role."</strong><br>
+			Affiliation: <strong>".$affiliation."</strong><br>
+			Date Requested: <strong>".$date_requested."</strong><br>
+			<h4>Service Request Information</h4><br>
+			Category: <strong>".$category."</strong><br>
+			Issue: <strong>".$issue."</strong><br>
+			Description: <strong>".$desc."</strong><br>
+			Files: <strong>".$files."</strong><br>
+			<h4>Technician Information</h4><br>
+			Name: <strong>".$tech."</strong><br>
+			Email: <strong>".$staff_email."</strong><br>";
+
+
+			$mail = new PHPMailer(true);
+			try {
+				$mail->SMTPDebug = 0;
+				$mail->IsSMTP();
+				$mail->Host = 'smtp.gmail.com';                         // Specify main and backup SMTP servers
+				$mail->SMTPAuth = true;                                 // Enable SMTP authentication
+				$mail->Username = 'techsuppsystem.edtech@gmail.com';		// SMTP username
+				$mail->Password = 'nfidrkrsxwttgqlz';							// SMTP password
+				$mail->SMTPSecure = 'tls'; 								// Enable TLS encryption, `ssl` also accepted
+				$mail->Port = 587;                                      // TCP port to connect to
+
+				// Recipients
+				$mail->setFrom('techsuppsystem.edtech@gmail.com', "ADMIN");
+				$mail->addAddress($email, $full_name);
+
+				//Content
+				$mail->isHTML(true);                                    // Set email format to HTML
+				$mail->Subject = "UST CLOUD CAMPUS TECH SUPPORT SYSTEM"; // subject
+				$mail->Body    = $msg1; // message
+				$mail->send();
+
+				$query="UPDATE tbl_tickets SET remarks=?, voided_reason=?, status=? WHERE ticket_number=?";
+				$stmt=$pdo->prepare($query);
+				if($stmt->execute([$remarks,$solution,$status,$trc])) {
+					echo json_encode(json_encode([
+						"status" => "updated"
+					]));
+				} else {
+					echo json_encode(json_encode([
+						"status" => "error"
+					]));
+				}
+				
+				
+			} catch (Exception $e) {
+				echo "Mailer Error: " . $mail->ErrorInfo;
+			}
+
+
+
 		} else {
 			echo json_encode(json_encode([
 				"status" => "error"
@@ -310,13 +395,88 @@ switch ($tag) {
 		$trc=$_POST['trc'];
 		$remarks=$_POST['remarks'];
 
+		$qx="SELECT tbl_tickets.*, categories.category_name, tbl_issues.issue_name, tbl_users.first_name as staff_fname, tbl_users.last_name as staff_lname, tbl_users.email as staff_email, tbl_globalroles.role_name FROM tbl_tickets INNER JOIN categories ON categories.category_id=tbl_tickets.category INNER JOIN tbl_issues ON tbl_issues.issue_id=tbl_tickets.issue 
+			INNER JOIN tbl_users ON tbl_users.id=tbl_tickets.tech_user INNER JOIN tbl_globalroles ON tbl_globalroles.id=tbl_tickets.role
+			WHERE ticket_number=?";
+		$stmtx=$pdo->prepare($qx);
+		if($stmtx->execute([$trc])) {
+			$row=$stmtx->fetch(PDO::FETCH_ASSOC);
+			$email = $row['email'];
+			$full_name = $row['name'];
+			$affiliation = $row['affiliation'];
+			$date_requested = date('Y-m-d', strtotime($row['date_added']));
+			$role=$row['role_name'];
+			$category = $row['category_name'];
+			$issue = $row['issue'];
+			$desc = $row['description'];
+			$files = $row['file'];
+			$tech = $row['staff_fname'] . $row['staff_lname'];
+			$staff_email = $row['staff_email'];
 
-		$query="UPDATE tbl_tickets SET remarks=?, voided_reason=?, status=? WHERE ticket_number=?";
-		$stmt=$pdo->prepare($query);
-		if($stmt->execute([$remarks,$voidreason,$status,$trc])) {
-			echo json_encode(json_encode([
-				"status" => "updated"
-			]));
+			require 'phpmailer_class/src/PHPMailer.php';
+			require 'phpmailer_class/src/Exception.php';
+			require 'phpmailer_class/src/SMTP.php';
+
+
+			$msg1="Good Day ".$full_name."!, <br><br> 
+				Your ticket ".$trc." has been CANCELLED. <br><br>
+					Reason: ".$voidreason." <br><br>
+					Remarks: ".$remarks." <br><br>
+					You provided the following information: <br><br><br>";
+
+			$msg1 .= "
+			Name: <strong>".$full_name."</strong><br>
+			Email: <strong>".$email."</strong><br>
+			Role: <strong>".$role."</strong><br>
+			Affiliation: <strong>".$affiliation."</strong><br>
+			Date Requested: <strong>".$date_requested."</strong><br>
+			<h4>Service Request Information</h4><br>
+			Category: <strong>".$category."</strong><br>
+			Issue: <strong>".$issue."</strong><br>
+			Description: <strong>".$desc."</strong><br>
+			Files: <strong>".$files."</strong><br>
+			<h4>Technician Information</h4><br>
+			Name: <strong>".$tech."</strong><br>
+			Email: <strong>".$staff_email."</strong><br>";
+
+
+			$mail = new PHPMailer(true);
+			try {
+				$mail->SMTPDebug = 0;
+				$mail->IsSMTP();
+				$mail->Host = 'smtp.gmail.com';                         // Specify main and backup SMTP servers
+				$mail->SMTPAuth = true;                                 // Enable SMTP authentication
+				$mail->Username = 'techsuppsystem.edtech@gmail.com';		// SMTP username
+				$mail->Password = 'nfidrkrsxwttgqlz';							// SMTP password
+				$mail->SMTPSecure = 'tls'; 								// Enable TLS encryption, `ssl` also accepted
+				$mail->Port = 587;                                      // TCP port to connect to
+
+				// Recipients
+				$mail->setFrom('techsuppsystem.edtech@gmail.com', "ADMIN");
+				$mail->addAddress($email, $full_name);
+
+				//Content
+				$mail->isHTML(true);                                    // Set email format to HTML
+				$mail->Subject = "UST CLOUD CAMPUS TECH SUPPORT SYSTEM"; // subject
+				$mail->Body    = $msg1; // message
+				$mail->send();
+
+				$query="UPDATE tbl_tickets SET remarks=?, voided_reason=?, status=? WHERE ticket_number=?";
+				$stmt=$pdo->prepare($query);
+				if($stmt->execute([$remarks,$voidreason,$status,$trc])) {
+					echo json_encode(json_encode([
+						"status" => "updated"
+					]));
+				} else {
+					echo json_encode(json_encode([
+						"status" => "error"
+					]));
+				}
+				
+				
+			} catch (Exception $e) {
+				echo "Mailer Error: " . $mail->ErrorInfo;
+			}
 		} else {
 			echo json_encode(json_encode([
 				"status" => "error"
@@ -336,9 +496,9 @@ switch ($tag) {
 	break;
 	case 'get_openedtickets':
 		$user_id=$_GET['user_id'];
-		$query="SELECT tbl_tickets.*, tbl_issues.issue_name, categories.category_name FROM tbl_tickets INNER JOIN tbl_issues ON tbl_tickets.issue=tbl_issues.issue_id INNER JOIN categories ON categories.category_id=tbl_tickets.category WHERE tech_user=?";
+		$query="SELECT tbl_tickets.*, tbl_issues.issue_name, categories.category_name FROM tbl_tickets INNER JOIN tbl_issues ON tbl_tickets.issue=tbl_issues.issue_id INNER JOIN categories ON categories.category_id=tbl_tickets.category WHERE tech_user=? AND tbl_tickets.status=?";
 		$stmt=$pdo->prepare($query);
-		if($stmt->execute([$user_id])) {
+		if($stmt->execute([$user_id,"1"])) {
 			echo json_encode($stmt->fetchAll(PDO::FETCH_ASSOC));
 		} else {
 			echo json_encode(json_encode([
@@ -407,12 +567,89 @@ switch ($tag) {
 		$status="1";
 		$trc=$_POST['trc'];
 
-		$query="UPDATE tbl_tickets SET tech_user=?, status=? WHERE ticket_number=?";
-		$stmt=$pdo->prepare($query);
-		if($stmt->execute([$tech_user,$status,$trc])) {
-			echo json_encode(json_encode([
-				"status" => "updated"
-			]));
+		$qx="SELECT tbl_tickets.*, categories.category_name, tbl_issues.issue_name, tbl_users.first_name as staff_fname, tbl_users.last_name as staff_lname, tbl_users.email as staff_email, tbl_globalroles.role_name FROM tbl_tickets INNER JOIN categories ON categories.category_id=tbl_tickets.category INNER JOIN tbl_issues ON tbl_issues.issue_id=tbl_tickets.issue 
+			INNER JOIN tbl_users ON tbl_users.id=tbl_tickets.tech_user INNER JOIN tbl_globalroles ON tbl_globalroles.id=tbl_tickets.role
+			WHERE ticket_number=?";
+		$stmtx=$pdo->prepare($qx);
+		if($stmtx->execute([$trc])) {
+			$row=$stmtx->fetch(PDO::FETCH_ASSOC);
+			$email = $row['email'];
+			$full_name = $row['name'];
+			$affiliation = $row['affiliation'];
+			$date_requested = date('Y-m-d', strtotime($row['date_added']));
+			$role=$row['role_name'];
+			$category = $row['category_name'];
+			$issue = $row['issue'];
+			$desc = $row['description'];
+			$files = $row['file'];
+			$tech = $row['staff_lname'] . ", " . $row['staff_fname'];
+			$staff_email = $row['staff_email'];
+
+			require 'phpmailer_class/src/PHPMailer.php';
+			require 'phpmailer_class/src/Exception.php';
+			require 'phpmailer_class/src/SMTP.php';
+
+
+			$msg1="Good Day ".$full_name."!, <br><br> 
+			We have received your ticketing form that you've submitted to UST CLOUD CAMPUS-TECHNICAL SUPPORT TICKETING SYSTEM <br><br> Our team will review your request as soon as possible. You will receive an approval email along with a Ticket Reference Code (TRC) which you can use to check the status of your ticket. It also signals the start of the processing of your request/requests. Thank You! <br><br> You provided the following information: <br><br><br>";
+			$msg1 .= "
+			Name: <strong>".$full_name."</strong><br>
+			Email: <strong>".$email."</strong><br>
+			Role: <strong>".$role."</strong><br>
+			Affiliation: <strong>".$affiliation."</strong><br>
+			Date Requested: <strong>".$date_requested."</strong><br>
+			<h4>Service Request Information</h4><br>
+			Category: <strong>".$category."</strong><br>
+			Issue: <strong>".$issue."</strong><br>
+			Description: <strong>".$desc."</strong><br>
+			Files: <strong>".$files."</strong><br>
+			<h4>Technician Information</h4><br>
+			Name: <strong>".$tech."</strong><br>
+			Email: <strong>".$staff_email."</strong><br>";
+
+
+			$mail = new PHPMailer(true);
+			try {
+				$mail->SMTPDebug = 0;
+				$mail->IsSMTP();
+				$mail->Host = 'smtp.gmail.com';                         // Specify main and backup SMTP servers
+				$mail->SMTPAuth = true;                                 // Enable SMTP authentication
+				$mail->Username = 'techsuppsystem.edtech@gmail.com';		// SMTP username
+				$mail->Password = 'nfidrkrsxwttgqlz';							// SMTP password
+				$mail->SMTPSecure = 'tls'; 								// Enable TLS encryption, `ssl` also accepted
+				$mail->Port = 587;                                      // TCP port to connect to
+
+				// Recipients
+				$mail->setFrom('techsuppsystem.edtech@gmail.com', "ADMIN");
+				$mail->addAddress($email, $full_name);
+
+				//Content
+				$mail->isHTML(true);                                    // Set email format to HTML
+				$mail->Subject = "UST CLOUD CAMPUS TECH SUPPORT SYSTEM"; // subject
+				$mail->Body    = $msg1; // message
+				
+
+				$query="UPDATE tbl_tickets SET tech_user=?, status=? WHERE ticket_number=?";
+				$stmt=$pdo->prepare($query);
+				if($stmt->execute([$tech_user,$status,$trc])) {
+					if($mail->send()) {
+						echo json_encode(json_encode([
+							"status" => "updated"
+						]));
+					} else {
+						echo json_encode(json_encode([
+							"st	atus" => "error"
+						]));
+					}
+				} else {
+					echo json_encode(json_encode([
+						"status" => "error"
+					]));
+				}
+				
+			} catch (Exception $e) {
+				echo "Mailer Error: " . $mail->ErrorInfo;
+			}
 		} else {
 			echo json_encode(json_encode([
 				"status" => "error"
@@ -712,17 +949,21 @@ switch ($tag) {
 		}
 	break;
 	case 'insert_ticket':
-		$ticket_number=strtoupper(rand(0,999) . substr(uniqid(), 0, 6));
+
+		$ticket_number=strtoupper(rand(0,999) . substr(uniqid(), 0, 4));
 		$email=$_POST['email'];
+		$fullname=$_POST['name'];
 		$role=$_POST['role'];
 		$affiliation=$_POST['affiliation'];
 		$category=$_POST['category'];
 		$issue=$_POST['issue'];
 		$description=$_POST['description'];
 		$file=$_POST['file'];
+
 		$query="INSERT INTO tbl_tickets (ticket_number,email,role,affiliation,category,issue,description,file,date_added) VALUES (?,?,?,?,?,?,?,?,?)";
-		$stmt=$pdo->prepare($query);
+			$stmt=$pdo->prepare($query);
 		if($stmt->execute([$ticket_number,$email,$role,$affiliation,$category,$issue,$description,$file,date('Y-m-d')])) {
+			
 			echo json_encode(json_encode([
 				"status" => "inserted"
 			]));

@@ -1,11 +1,58 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import { Outlet } from "react-router";
-import { Link } from "react-router-dom";
 import { MDBDataTable } from "mdbreact";
+import axios from 'axios';
+import { Link,useNavigate } from "react-router-dom";
+import {URL} from '../components_connection/'
 
-const AssignedTicketsIT = () => {
+export function AssignedTicketsIT(props) {
+  const [hasLoaded, setHasLoaded] = useState(false);
+
+  const [dataSource, setDataSource] = useState([]);
+
+
+
+  let navigate = useNavigate(); 
+
+  const routeChange = () =>{ 
+    let path = '../pages_it/mytickets/view-assigned-ticket'; 
+    navigate(path);
+  }
+
+  const _viewTicket = (data1) =>{ 
+    localStorage.setItem('selected_ticketnumber', data1);
+    routeChange();
+  }
+
+  useEffect(() => {
+    let user_id=localStorage.getItem('staff_id');
+    if(hasLoaded == false) {
+      axios.get(URL + "?tag=get_openedtickets&user_id="+user_id).then(res=>{
+        console.log(res.data);
+        let source = [];
+        for (var i = 0; i < res.data.length; i++) {
+          let trc=res.data[i]['ticket_number'];
+          source.push({
+            trc: res.data[i]['ticket_number'],
+            issue: res.data[i]['issue_name'],
+            category: res.data[i]['category_name'],
+            requestby: res.data[i]['name'],
+            priority: res.data[i]['priority_level'],
+            date: res.data[i]['date_added'],
+            action: (
+              <button onClick={()=>_viewTicket(trc)} style={{backgroundColor: 'transparent', color: 'blue', border: 0}}>
+               View
+              </button>
+            ),
+          });
+        }
+        setDataSource(source);
+      })
+    }
+  },[])
+
   const data = {
     columns: [
       {
@@ -51,404 +98,7 @@ const AssignedTicketsIT = () => {
         width: 100,
       },
     ],
-    rows: [
-      {
-        trc: 12345,
-        issue: "Google password",
-        category: "Google",
-        requestby: "Cruz, Juan",
-        priority: 4,
-        date: "2011/12/06",
-        action: (
-          <Link to="../pages_it/mytickets/view-assigned-ticket">View</Link>
-        ),
-      },
-      {
-        trc: 236827,
-        issue: "wrong name",
-        category: "Blackboard",
-        requestby: "Cross, John",
-        priority: 1,
-        date: "2018/01/08",
-        action: (
-          <Link to="../pages_it/mytickets/view-assigned-ticket">View</Link>
-        ),
-      },
-      {
-        trc: 28340,
-        issue: "issueissue",
-        category: "Zoom",
-        requestby: "Smith, Samantha",
-        priority: 2,
-        date: "2022/8/17",
-        action: (
-          <Link to="../pages_it/mytickets/view-assigned-ticket">View</Link>
-        ),
-      },
-      {
-        trc: 43479,
-        issue: "Email",
-        category: "Course Site",
-        requestby: "Montana, Hannah",
-        priority: 2,
-        date: "2022/12/09",
-        action: (
-          <Link to="../pages_it/mytickets/view-assigned-ticket">View</Link>
-        ),
-      },
-      {
-        trc: 28340,
-        issue: "issueissue",
-        category: "Zoom",
-        requestby: "Smith, Samantha",
-        priority: 2,
-        date: "2022/8/17",
-        action: (
-          <Link to="../pages_it/mytickets/view-assigned-ticket">View</Link>
-        ),
-      },
-      {
-        trc: 43479,
-        issue: "Email",
-        category: "Course Site",
-        requestby: "Montana, Hannah",
-        priority: 2,
-        date: "2022/12/09",
-        action: (
-          <Link to="../pages_it/mytickets/view-assigned-ticket">View</Link>
-        ),
-      },
-      {
-        trc: 12345,
-        issue: "Google password",
-        category: "Google",
-        requestby: "Cruz, Juan",
-        priority: 4,
-        date: "2011/12/06",
-        action: (
-          <Link to="../pages_it/mytickets/view-assigned-ticket">View</Link>
-        ),
-      },
-      {
-        trc: 236827,
-        issue: "wrong name",
-        category: "Blackboard",
-        requestby: "Cross, John",
-        priority: 1,
-        date: "2018/01/08",
-        action: (
-          <Link to="../pages_it/mytickets/view-assigned-ticket">View</Link>
-        ),
-      },
-      {
-        trc: 28340,
-        issue: "issueissue",
-        category: "Zoom",
-        requestby: "Smith, Samantha",
-        priority: 2,
-        date: "2022/8/17",
-        action: (
-          <Link to="../pages_it/mytickets/view-assigned-ticket">View</Link>
-        ),
-      },
-      {
-        trc: 12345,
-        issue: "Google password",
-        category: "Google",
-        requestby: "Cruz, Juan",
-        priority: 4,
-        date: "2011/12/06",
-        action: (
-          <Link to="../pages_it/mytickets/view-assigned-ticket">View</Link>
-        ),
-      },
-      {
-        trc: 236827,
-        issue: "wrong name",
-        category: "Blackboard",
-        requestby: "Cross, John",
-        priority: 1,
-        date: "2018/01/08",
-        action: (
-          <Link to="../pages_it/mytickets/view-assigned-ticket">View</Link>
-        ),
-      },
-      {
-        trc: 28340,
-        issue: "issueissue",
-        category: "Zoom",
-        requestby: "Smith, Samantha",
-        priority: 2,
-        date: "2022/8/17",
-        action: (
-          <Link to="../pages_it/mytickets/view-assigned-ticket">View</Link>
-        ),
-      },
-      {
-        trc: 43479,
-        issue: "Email",
-        category: "Course Site",
-        requestby: "Montana, Hannah",
-        priority: 2,
-        date: "2022/12/09",
-        action: (
-          <Link to="../pages_it/mytickets/view-assigned-ticket">View</Link>
-        ),
-      },
-      {
-        trc: 28340,
-        issue: "issueissue",
-        category: "Zoom",
-        requestby: "Smith, Samantha",
-        priority: 2,
-        date: "2022/8/17",
-        action: (
-          <Link to="../pages_it/mytickets/view-assigned-ticket">View</Link>
-        ),
-      },
-      {
-        trc: 43479,
-        issue: "Email",
-        category: "Course Site",
-        requestby: "Montana, Hannah",
-        priority: 2,
-        date: "2022/12/09",
-        action: (
-          <Link to="../pages_it/mytickets/view-assigned-ticket">View</Link>
-        ),
-      },
-      {
-        trc: 12345,
-        issue: "Google password",
-        category: "Google",
-        requestby: "Cruz, Juan",
-        priority: 4,
-        date: "2011/12/06",
-        action: (
-          <Link to="../pages_it/mytickets/view-assigned-ticket">View</Link>
-        ),
-      },
-      {
-        trc: 236827,
-        issue: "wrong name",
-        category: "Blackboard",
-        requestby: "Cross, John",
-        priority: 1,
-        date: "2018/01/08",
-        action: (
-          <Link to="../pages_it/mytickets/view-assigned-ticket">View</Link>
-        ),
-      },
-      {
-        trc: 28340,
-        issue: "issueissue",
-        category: "Zoom",
-        requestby: "Smith, Samantha",
-        priority: 2,
-        date: "2022/8/17",
-        action: (
-          <Link to="../pages_it/mytickets/view-assigned-ticket">View</Link>
-        ),
-      },
-      {
-        trc: 12345,
-        issue: "Google password",
-        category: "Google",
-        requestby: "Cruz, Juan",
-        priority: 4,
-        date: "2011/12/06",
-        action: (
-          <Link to="../pages_it/mytickets/view-assigned-ticket">View</Link>
-        ),
-      },
-      {
-        trc: 236827,
-        issue: "wrong name",
-        category: "Blackboard",
-        requestby: "Cross, John",
-        priority: 1,
-        date: "2018/01/08",
-        action: (
-          <Link to="../pages_it/mytickets/view-assigned-ticket">View</Link>
-        ),
-      },
-      {
-        trc: 28340,
-        issue: "issueissue",
-        category: "Zoom",
-        requestby: "Smith, Samantha",
-        priority: 2,
-        date: "2022/8/17",
-        action: (
-          <Link to="../pages_it/mytickets/view-assigned-ticket">View</Link>
-        ),
-      },
-      {
-        trc: 43479,
-        issue: "Email",
-        category: "Course Site",
-        requestby: "Montana, Hannah",
-        priority: 2,
-        date: "2022/12/09",
-        action: (
-          <Link to="../pages_it/mytickets/view-assigned-ticket">View</Link>
-        ),
-      },
-      {
-        trc: 28340,
-        issue: "issueissue",
-        category: "Zoom",
-        requestby: "Smith, Samantha",
-        priority: 2,
-        date: "2022/8/17",
-        action: (
-          <Link to="../pages_it/mytickets/view-assigned-ticket">View</Link>
-        ),
-      },
-      {
-        trc: 43479,
-        issue: "Email",
-        category: "Course Site",
-        requestby: "Montana, Hannah",
-        priority: 2,
-        date: "2022/12/09",
-        action: (
-          <Link to="../pages_it/mytickets/view-assigned-ticket">View</Link>
-        ),
-      },
-      {
-        trc: 12345,
-        issue: "Google password",
-        category: "Google",
-        requestby: "Cruz, Juan",
-        priority: 4,
-        date: "2011/12/06",
-        action: (
-          <Link to="../pages_it/mytickets/view-assigned-ticket">View</Link>
-        ),
-      },
-      {
-        trc: 236827,
-        issue: "wrong name",
-        category: "Blackboard",
-        requestby: "Cross, John",
-        priority: 1,
-        date: "2018/01/08",
-        action: (
-          <Link to="../pages_it/mytickets/view-assigned-ticket">View</Link>
-        ),
-      },
-      {
-        trc: 28340,
-        issue: "issueissue",
-        category: "Zoom",
-        requestby: "Smith, Samantha",
-        priority: 2,
-        date: "2022/8/17",
-        action: (
-          <Link to="../pages_it/mytickets/view-assigned-ticket">View</Link>
-        ),
-      },
-      {
-        trc: 12345,
-        issue: "Google password",
-        category: "Google",
-        requestby: "Cruz, Juan",
-        priority: 4,
-        date: "2011/12/06",
-        action: (
-          <Link to="../pages_it/mytickets/view-assigned-ticket">View</Link>
-        ),
-      },
-      {
-        trc: 236827,
-        issue: "wrong name",
-        category: "Blackboard",
-        requestby: "Cross, John",
-        priority: 1,
-        date: "2018/01/08",
-        action: (
-          <Link to="../pages_it/mytickets/view-assigned-ticket">View</Link>
-        ),
-      },
-      {
-        trc: 28340,
-        issue: "issueissue",
-        category: "Zoom",
-        requestby: "Smith, Samantha",
-        priority: 2,
-        date: "2022/8/17",
-        action: (
-          <Link to="../pages_it/mytickets/view-assigned-ticket">View</Link>
-        ),
-      },
-      {
-        trc: 43479,
-        issue: "Email",
-        category: "Course Site",
-        requestby: "Montana, Hannah",
-        priority: 2,
-        date: "2022/12/09",
-        action: (
-          <Link to="../pages_it/mytickets/view-assigned-ticket">View</Link>
-        ),
-      },
-      {
-        trc: 28340,
-        issue: "issueissue",
-        category: "Zoom",
-        requestby: "Smith, Samantha",
-        priority: 2,
-        date: "2022/8/17",
-        action: (
-          <Link to="../pages_it/mytickets/view-assigned-ticket">View</Link>
-        ),
-      },
-      {
-        trc: 43479,
-        issue: "Email",
-        category: "Course Site",
-        requestby: "Montana, Hannah",
-        priority: 2,
-        date: "2022/12/09",
-        action: (
-          <Link to="../pages_it/mytickets/view-assigned-ticket">View</Link>
-        ),
-      },
-      {
-        trc: 12345,
-        issue: "Google password",
-        category: "Google",
-        requestby: "Cruz, Juan",
-        priority: 4,
-        date: "2011/12/06",
-        action: (
-          <Link to="../pages_it/mytickets/view-assigned-ticket">View</Link>
-        ),
-      },
-      {
-        trc: 236827,
-        issue: "wrong name",
-        category: "Blackboard",
-        requestby: "Cross, John",
-        priority: 1,
-        date: "2018/01/08",
-        action: (
-          <Link to="../pages_it/mytickets/view-assigned-ticket">View</Link>
-        ),
-      },
-      {
-        trc: 28340,
-        issue: "issueissue",
-        category: "Zoom",
-        requestby: "Smith, Samantha",
-        priority: 2,
-        date: "2022/8/17",
-        action: (
-          <Link to="../pages_it/mytickets/view-assigned-ticket">View</Link>
-        ),
-      },
-    ],
+    rows: dataSource
   };
 
   return (
@@ -460,7 +110,7 @@ const AssignedTicketsIT = () => {
           </div>
         </Row>
         <Row>
-          <Link to="../pages_it/mytickets" className="back-button-text">
+          <Link to="../pages_admin/mytickets" className="back-button-text">
             <h5 className="back-button">
               <i className="bi bi-arrow-left-circle"></i> Back{" "}
             </h5>

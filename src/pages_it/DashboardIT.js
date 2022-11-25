@@ -2,12 +2,34 @@ import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import React, { useEffect, useRef, useState } from "react";
 import Highcharts from "highcharts";
+import axios from 'axios';
+import { Link,useNavigate } from "react-router-dom";
+import {URL} from '../components_connection/'
 
-const DashboardIT = () => {
+
+export function DashboardIT(props) {
   const refContainer = useRef(null);
   const [dataSource, setDataSource] = useState([]);
+  const [hasLoaded, setHasLoaded] = useState(false);
+
+  const [openedTickets, setOpenedTickets] = useState("0"); // opened
+  const [newTickets, setNewTickets] = useState("0"); // new request
+  const [solvedTickets, setSolvedTickets] = useState("0"); // solved
+
 
   useEffect(() => {
+    if(hasLoaded == false) {
+      var staff_id = localStorage.getItem("staff_id");
+      axios.get(URL + "?tag=get_ticketcounts"+"&staff_id="+staff_id).then(res=>{
+        setSolvedTickets(res.data[0]['solved_tickets']);
+        setNewTickets(res.data[0]['new_requests']);
+        setOpenedTickets(res.data[0]['opened_tickets']);
+        setHasLoaded(true);
+      })
+    }
+
+
+
     const chart = Highcharts.chart(refContainer.current, {
       chart: {
         type: "line",
@@ -102,13 +124,13 @@ const DashboardIT = () => {
                     <div className="dashboard-info-card-title">
                       Open Tickets
                     </div>
-                    <div className="dashboard-info-card-number">31</div>
+                    <div className="dashboard-info-card-number">{openedTickets}</div>
                   </center>
                 </div>
                 <div className="dashboard-info-card">
                   <center>
                     <div className="dashboard-info-card-title">New Request</div>
-                    <div className="dashboard-info-card-number">12</div>
+                    <div className="dashboard-info-card-number">{newTickets}</div>
                   </center>
                 </div>
                 <div className="dashboard-info-card">
@@ -116,7 +138,7 @@ const DashboardIT = () => {
                     <div className="dashboard-info-card-title">
                       Solved Tickets
                     </div>
-                    <div className="dashboard-info-card-number">23</div>
+                    <div className="dashboard-info-card-number">{solvedTickets}</div>
                   </center>
                 </div>
               </div>

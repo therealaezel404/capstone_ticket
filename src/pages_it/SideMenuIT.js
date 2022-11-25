@@ -1,13 +1,69 @@
-import React from "react";
+import { useEffect, useRef, useState } from "react";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import TopLogo from "../assets_admin/toplogo.png";
-import { Link } from "react-router-dom";
+import { Link, NavLink,useNavigate } from "react-router-dom";
+import axios from 'axios';
+import {URL} from '../components_connection/'
 
-const SideMenuIT = () => {
+export function SideMenuIT(props) {
+  const [popup, setPop] = useState(false);
+
+  const handleClickOpen = () => {
+    setPop(!popup);
+  };
+  const closePopup = () => {
+    setPop(false);
+  };
+
+
+  let navigate = useNavigate(); 
+
+  const routeChange = () =>{ 
+    let path = 'pages_it/myaccount'; 
+    navigate(path);
+  }
+
+  const _openMyAccount = () =>{
+    let my_id = localStorage.getItem("staff_id");
+    localStorage.setItem("selected_user_id", my_id);
+    routeChange();
+  }
+
+  const _Logout = (data) => {
+    localStorage.clear();
+    let path = '../login-admin'; 
+    navigate(path);
+  }
+
+
   return (
     <div className="side-menu">
+            {popup ? (
+          <div className="form-popup">
+            <div>
+              <center>
+                <div className="form-popup-title">LOGOUT</div>
+              </center>
+               <div className="create">
+                  <label>Are you sure you want to logout?</label>
+                  <div>
+                    <span>
+                      <button onClick={_Logout}>Confirm</button>
+                    </span>
+                    <span>
+                        <button onClick={closePopup} className="cancel">
+                        Cancel
+                      </button>
+                    </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : (
+          ""
+        )}
       <div className="top-section">
         <Container fluid>
           <Row>
@@ -54,38 +110,31 @@ const SideMenuIT = () => {
             </Link>
           </li>
         </ul>
-        <ul>
-          <li>
-            <Link to="pages_it/alltickets" className="menu-item">
-              <div className="menu-icon">
-                <i
-                  title="All Tickets"
-                  className="bi bi-ticket-detailed-fill"
-                ></i>
-              </div>
-              <span>All Tickets</span>
-            </Link>
-          </li>
-        </ul>
-        <br></br>
+ 
       </div>
 
       <div className="side-menu-footer">
         <div class="contaniner">
           <div class="row">
             <div class="col-xs">
-              <span>
-                <Link to="pages_it/myaccount">
-                  <p>My Account</p>
-                </Link>
-              </span>
+                <button
+                  style={{backgroundColor: 'transparent', textDecoration: 'none', border: 0}}
+                  onClick={_openMyAccount}
+                  // activeclassname="active"
+                  className="menu-item-footer"
+                >
+                  <span>My Account</span>
+                </button>
             </div>
             <div class="col-xs">
-              <Link to="/admin">
-                <span>
-                  <p>Log Out</p>
-                </span>
-              </Link>
+               <button
+                  style={{backgroundColor: 'transparent', textDecoration: 'none', border: 0}}
+                  onClick={handleClickOpen}
+                  // activeclassname="active"
+                  className="menu-item-footer"
+                >
+                  <span>Log Out</span>
+                </button>
             </div>
           </div>
         </div>

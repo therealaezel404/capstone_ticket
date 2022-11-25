@@ -4,6 +4,7 @@ import Modal from "react-bootstrap/Modal";
 import { Link,useNavigate } from "react-router-dom";
 import axios from 'axios';
 
+
 const ModalHeader = styled.div`
 	border-bottom: 0 none;
 	padding: 0%;
@@ -154,6 +155,7 @@ export function ConfirmModal(props) {
 		f.append("file", file)
 
 		axios.post(URL,f).then(res2=>{
+			console.log(res2.data);
 			var output = JSON.parse(res2.data);
 			console.log(output['status']);
 			switch(output['status']) {

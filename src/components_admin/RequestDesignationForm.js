@@ -22,6 +22,14 @@ export function RequestDesignationForm(props) {
     setRejectPopup(false);
   }
 
+
+  let navigate = useNavigate(); 
+  const routeChange = () =>{ 
+    let path = '../pages_admin/servicerequests'; 
+    navigate(path);
+  }
+
+
   const _RejectRequest=()=> {
     let trc=localStorage.getItem('selected_ticketnumber')
     let f =  new FormData()
@@ -55,11 +63,13 @@ export function RequestDesignationForm(props) {
     f.append("user_id", assignTo)
 
     axios.post(URL,f).then(res2=>{
+      console.log(res2.data);
       var output = JSON.parse(res2.data);
       console.log(output['status']);
       switch(output['status']) {
         case 'updated':
           alert("sucessfully updated!")
+          routeChange();
         break;
         case 'error':
           alert("error");

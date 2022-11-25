@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.0
+-- version 5.1.1
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 23, 2022 at 12:06 AM
--- Server version: 10.4.24-MariaDB
--- PHP Version: 7.4.29
+-- Generation Time: Nov 25, 2022 at 10:55 AM
+-- Server version: 10.4.22-MariaDB
+-- PHP Version: 7.4.27
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -44,6 +44,29 @@ INSERT INTO `categories` (`category_id`, `category_name`, `category_description`
 (1, 'UST Account', 'For concerns regarding UST account test', '', '2022-09-17 01:14:58', '2022-10-31 15:52:44'),
 (2, 'Cloud Campus Blackboard', 'Issues with the UST Blackboard account of the user', 'active', '2022-09-17 03:10:42', '2022-09-19 19:07:04'),
 (31, 'Sample1', 'sample description', '', '2022-10-28 00:00:00', '2022-10-28 00:00:00');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `tbl_globalroles`
+--
+
+CREATE TABLE `tbl_globalroles` (
+  `id` int(11) NOT NULL,
+  `role_name` text NOT NULL,
+  `date_added` date NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `tbl_globalroles`
+--
+
+INSERT INTO `tbl_globalroles` (`id`, `role_name`, `date_added`) VALUES
+(1, 'Admin/Acad Official', '2022-11-25'),
+(2, 'Academic Staff', '2022-11-25'),
+(3, 'Non-academic Staff', '2022-11-25'),
+(4, 'Student', '2022-11-25'),
+(5, 'Other', '2022-11-25');
 
 -- --------------------------------------------------------
 
@@ -148,9 +171,7 @@ CREATE TABLE `tbl_tickets` (
 --
 
 INSERT INTO `tbl_tickets` (`id`, `ticket_number`, `name`, `status`, `reject_reason`, `voided_reason`, `email`, `role`, `affiliation`, `category`, `issue`, `description`, `file`, `tech_user`, `priority_level`, `resolution`, `remarks`, `date_added`, `date_resolved`) VALUES
-(2, '83634A', 'Juan Dela Cruz', 2, 0, 1, 'tiff.madrigal95@gmail.com', 1, 'aaaaa', 1, 1, 'aaaaa', 'C:\\fakepath\\face-throwing-a-kiss_1f618.png', 1, 1, 'Sample resolution', 'sdfsdfsd', '2022-10-15', '2022-10-23'),
-(4, '12312A', 'Juan Dela Cruz', 0, 0, 0, 'tiff.madrigal95@gmail.com', 1, 'aaaaa', 1, 1, 'aaaaa', 'C:\\fakepath\\face-throwing-a-kiss_1f618.png', 0, 1, 'Sample resolution', '', '2022-10-15', NULL),
-(5, '32132A', 'Juan Dela Cruz', 0, 0, 0, 'tiff.madrigal95@gmail.com', 1, 'aaaaa', 1, 1, 'aaaaa', 'C:\\fakepath\\face-throwing-a-kiss_1f618.png', 0, 1, 'Sample resolution', '', '2022-10-15', NULL);
+(1, '8306380', 'BOB2', 2, 0, 1, 'theloneboat@gmail.com', 1, 'asdasdas', 1, 1, 'asdasdas', 'C:\\fakepath\\Screenshot (1).png', 2, 2, '', 'asdasdasd', '2022-11-25', NULL);
 
 -- --------------------------------------------------------
 
@@ -295,6 +316,12 @@ ALTER TABLE `categories`
   ADD PRIMARY KEY (`category_id`);
 
 --
+-- Indexes for table `tbl_globalroles`
+--
+ALTER TABLE `tbl_globalroles`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `tbl_issues`
 --
 ALTER TABLE `tbl_issues`
@@ -359,6 +386,12 @@ ALTER TABLE `categories`
   MODIFY `category_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
 
 --
+-- AUTO_INCREMENT for table `tbl_globalroles`
+--
+ALTER TABLE `tbl_globalroles`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
 -- AUTO_INCREMENT for table `tbl_issues`
 --
 ALTER TABLE `tbl_issues`
@@ -380,7 +413,7 @@ ALTER TABLE `tbl_solutions`
 -- AUTO_INCREMENT for table `tbl_tickets`
 --
 ALTER TABLE `tbl_tickets`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `tbl_users`
